@@ -6,7 +6,7 @@ import * as cheerio from "cheerio";
  * Coletando o código HTML do site oficial da CNN Brasil.
  * @link https://axios-http.com/docs/example
  */
-const response = await axios.get('https://www.cnnbrasil.com.br/');
+const response = await axios.get('https://www.cnnbrasil.com.br/politica/');
 const html = response.data;
 
 /**
@@ -15,7 +15,7 @@ const html = response.data;
  */
 const $ = cheerio.load(html);
 
-const all_news = $(".block__news__title");
+const all_news = $(".home__list__item"); // $( ) deve receber a classe do <li>
 
 /**
  * Imprimindo todas as manchetes do site da CNN Brasil no console.
@@ -24,7 +24,18 @@ const all_news = $(".block__news__title");
  */
 for (const news of all_news)
 {
-    const text = $(news).text().trim();
+    /**
+     * Saída estruturada de dados, para melhor manipulação futura.
+     * @link https://cheerio.js.org/docs/basics/traversing#find
+     */
+    const structured_data = 
+    {
+        link: $(news).find(".home__list__tag").attr("href"),
+        title: $(news).find(".news-item-header__title").text(),
+        description: $(news).find(".home__list__tag").attr("title"),
+        datetime: $(news).find(".home__title__date").text(),
+        image: $(news).find("img").attr("src")
+    };
 
-    console.log(text);
+    console.log(structured_data);
 }
